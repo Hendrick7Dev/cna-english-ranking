@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { getStudentsRanking } from "@/db"
+import { getStudentsRanking, getTopPerformersByPunctuality } from "@/db"
 
 function getRankingColor(position: number) {
   if (position === 1) return "bg-yellow-100 border-yellow-300 text-yellow-800"
@@ -49,29 +49,32 @@ function getBadgeForLevel(level: string) {
 
 export default async function RankingPage() {
   // Buscar dados reais do banco
-  const studentsRanking = await getStudentsRanking()
+  const [studentsRanking, topPerformersList] = await Promise.all([
+    getStudentsRanking(),
+    getTopPerformersByPunctuality()
+  ])
   
   // Calcular estatísticas
   const totalStudents = studentsRanking.length
   const averagePoints = totalStudents > 0 
     ? Math.round(studentsRanking.reduce((acc, student) => acc + student.calculatedPoints, 0) / totalStudents)
     : 0
-  const topPerformers = studentsRanking.filter((s) => s.calculatedPoints >= 700).length
+  const topPerformers = topPerformersList.length
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-8">
       <div className="hero-gradient rounded-2xl p-8 text-center space-y-6 pulse-glow-effect">
         <div className="float-animation">
           <h1 className="text-5xl font-bold text-foreground text-balance mb-4">
-            🏆 <span className="sparkle-effect inline-block">Ranking da Turma</span> 🏆
+            🏆 <span className="sparkle-effect inline-block">TEEN UP 2 LEAGUE</span> 🏆
           </h1>
         </div>
         <p className="text-xl text-muted-foreground text-pretty max-w-2xl mx-auto leading-relaxed">
-          Acompanhe o progresso dos alunos e celebre as conquistas no aprendizado do inglês!
+        The competition is on! Show your determination, overcome challenges and secure your place on the semester podium.
         </p>
         <div className="flex justify-center space-x-4 mt-6">
           <div className="sparkle-effect bg-accent/30 px-4 py-2 rounded-full border border-accent/50">
-            <span className="text-white font-semibold">✨ Sistema Gamificado ✨</span>
+            <span className="text-white font-semibold">🚀 Your journey to mastery 🚀</span>
           </div>
         </div>
       </div>
@@ -83,7 +86,7 @@ export default async function RankingPage() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-accent">{totalStudents}</div>
-            <p className="text-sm text-muted-foreground">Alunos Ativos</p>
+            <p className="text-sm text-muted-foreground">Active Students</p>
           </CardContent>
         </Card>
 
@@ -93,7 +96,7 @@ export default async function RankingPage() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-secondary">{averagePoints}</div>
-            <p className="text-sm text-muted-foreground">Pontos Médios</p>
+            <p className="text-sm text-muted-foreground">Average Points</p>
           </CardContent>
         </Card>
 
@@ -104,6 +107,23 @@ export default async function RankingPage() {
           <CardContent>
             <div className="text-3xl font-bold text-accent">{topPerformers}</div>
             <p className="text-sm text-muted-foreground">Top Performers</p>
+            {topPerformers > 0 && (
+              <div className="mt-3 space-y-1">
+                <p className="text-xs text-muted-foreground">⏰ No delays</p>
+                <div className="flex flex-wrap justify-center gap-1">
+                  {topPerformersList.slice(0, 3).map((student) => (
+                    <Badge key={student.id} className="bg-green-500 text-white text-xs px-2 py-1">
+                      {student.name}
+                    </Badge>
+                  ))}
+                  {topPerformersList.length > 3 && (
+                    <Badge className="bg-accent text-accent-foreground text-xs px-2 py-1">
+                      +{topPerformersList.length - 3} more
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -111,17 +131,17 @@ export default async function RankingPage() {
       <Card className="shadow-2xl glow-effect border-primary/30">
         <CardHeader className="bg-primary text-primary-foreground rounded-t-lg">
           <CardTitle className="text-xl font-bold flex items-center gap-2">
-            <span className="sparkle-effect">🏆</span> Ranking dos Alunos
+            <span className="sparkle-effect">🏆</span> Student Ranking
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/50 border-border">
-                <TableHead className="text-center font-bold text-foreground">🏅 Posição</TableHead>
-                <TableHead className="font-bold text-foreground">👤 Nome</TableHead>
-                <TableHead className="text-center font-bold text-foreground">✨ Pontos</TableHead>
-                <TableHead className="text-center font-bold text-foreground">📚 Nível</TableHead>
+                <TableHead className="text-center font-bold text-foreground">🏅 Position</TableHead>
+                <TableHead className="font-bold text-foreground">👤 Name</TableHead>
+                <TableHead className="text-center font-bold text-foreground">✨ Points</TableHead>
+                <TableHead className="text-center font-bold text-foreground">📚 Level</TableHead>
                 <TableHead className="text-center font-bold text-foreground">🎖️ Badge</TableHead>
               </TableRow>
             </TableHeader>
@@ -163,16 +183,16 @@ export default async function RankingPage() {
                       <div className="text-6xl">📚</div>
                       <div>
                         <h3 className="text-xl font-semibold text-foreground mb-2">
-                          Nenhum aluno cadastrado ainda
+                          No students registered yet
                         </h3>
                         <p className="text-muted-foreground mb-4">
-                          Comece adicionando alunos ao sistema para ver o ranking!
+                          Start by adding students to the system to see the ranking!
                         </p>
                         <a 
                           href="/dashboard/students/add"
                           className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
                         >
-                          ➕ Adicionar Primeiro Aluno
+                          ➕ Add First Student
                         </a>
                       </div>
                     </div>
@@ -187,7 +207,7 @@ export default async function RankingPage() {
       <Card className="top3-gradient border-accent/30 shadow-2xl glow-effect">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-foreground">
-            <span className="sparkle-effect">🎉</span> Parabéns aos nossos Top 3!{" "}
+            <span className="sparkle-effect">🎉</span> Congratulations to our Top 3!{" "}
             <span className="sparkle-effect">🎉</span>
           </CardTitle>
         </CardHeader>
@@ -211,7 +231,7 @@ export default async function RankingPage() {
                   <h3 className="font-bold text-xl text-foreground mb-2">{student.name}</h3>
                   <p className="text-3xl font-bold text-accent mb-3">{student.calculatedPoints} pts</p>
                   <Badge className={`${getLevelColor(student.level)} text-sm px-3 py-1`}>{student.level}</Badge>
-                  {index === 0 && <div className="mt-4 text-yellow-400 sparkle-effect">⭐ Campeão da Turma ⭐</div>}
+                  {index === 0 && <div className="mt-4 text-yellow-400 sparkle-effect">⭐ Class Champion ⭐</div>}
                 </div>
               ))}
             </div>
@@ -219,25 +239,37 @@ export default async function RankingPage() {
             <div className="text-center py-8">
               <div className="text-4xl mb-4">🏆</div>
               <h3 className="text-xl font-semibold text-foreground mb-2">
-                Top {studentsRanking.length} Alunos
+                Top {studentsRanking.length} Students
               </h3>
               <p className="text-muted-foreground">
-                Adicione mais alunos para ver o Top 3 completo!
+                Add more students to see the complete Top 3!
               </p>
             </div>
           ) : (
             <div className="text-center py-8">
               <div className="text-4xl mb-4">🎯</div>
               <h3 className="text-xl font-semibold text-foreground mb-2">
-                Aguardando os primeiros alunos
+                Waiting for the first students
               </h3>
               <p className="text-muted-foreground">
-                O Top 3 será exibido quando houver pelo menos 3 alunos cadastrados
+                The Top 3 will be displayed when there are at least 3 students registered
               </p>
             </div>
           )}
         </CardContent>
       </Card>
+
+      {/* Professional Footer */}
+      <footer className="mt-12 pt-8 border-t border-border/50">
+        <div className="text-center">
+          <p className="text-sm text-muted-foreground">
+            Powered by <span className="font-semibold text-foreground">Teacher Leonardo Hendrick</span>
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Professional English Learning System
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }

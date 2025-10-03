@@ -139,28 +139,27 @@ export async function getDashboardStats() {
 export async function getStudentsRanking(): Promise<StudentWithCalculatedPoints[]> {
   const students = await getAllStudents();
   
-  // Para cada aluno, calcular pontos totais (entradas + pontos iniciais)
-  const studentsWithCalculatedPoints = await Promise.all(
-    students.map(async (student) => {
-      // Calcular pontos das entradas
-      const pointEntries = await sql`
-        SELECT COALESCE(SUM(points_awarded), 0) as total_points
-        FROM point_entries 
-        WHERE student_id = ${student.id}
-      `;
-
-      const entriesPoints = Number(pointEntries[0]?.total_points || 0);
-      
-      // Pontos totais = pontos das entradas + pontos iniciais do seed
-      const totalPoints = entriesPoints + student.points;
-      
-      return {
-        ...student,
-        calculatedPoints: totalPoints
-      };
-    })
-  );
+  // Os pontos já estão corretos na tabela students (pontos iniciais + pontos das entradas)
+  const studentsWithCalculatedPoints = students.map((student) => ({
+    ...student,
+    calculatedPoints: student.points
+  }));
 
   // Ordenar por pontos calculados
   return studentsWithCalculatedPoints.sort((a, b) => b.calculatedPoints - a.calculatedPoints);
+}
+
+export async function getTopPerformersByPunctuality(): Promise<Student[]> {
+  return await sql`
+    SELECT DISTINCT s.id, s.name, s.level, s.points, s.is_active, s.created_at, s.updated_at
+    FROM students s
+    WHERE s.is_active = true
+    AND s.id NOT IN (
+      SELECT DISTINCT pe.student_id
+      FROM point_entries pe
+      INNER JOIN point_activities pa ON pe.activity_id = pa.id
+      WHERE pa.description LIKE '%Late Submission%'
+    )
+    ORDER BY s.points DESC
+  ` as Student[];
 }

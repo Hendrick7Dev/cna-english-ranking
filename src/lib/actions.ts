@@ -144,16 +144,10 @@ export async function addPoints(formData: FormData) {
       VALUES (${studentId}, ${activityId}, ${pointsAwarded}, ${notes || null}, now())
     `
 
-    // Atualizar pontos totais do aluno
-    const totalPoints = await sql`
-      SELECT COALESCE(SUM(points_awarded), 0) as total
-      FROM point_entries 
-      WHERE student_id = ${studentId}
-    `
-
+    // Simplesmente somar os pontos ao valor atual
     await sql`
       UPDATE students 
-      SET points = ${totalPoints[0]?.total || 0}, updated_at = now()
+      SET points = points + ${pointsAwarded}, updated_at = now()
       WHERE id = ${studentId}
     `
 
