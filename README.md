@@ -1,36 +1,114 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏆 English Class Ranking System
 
-## Getting Started
+> A simple gamified ranking system to motivate English students through points and friendly competition.
 
-First, run the development server:
+## 🎯 What is this?
 
+This is a simple web app I built to gamify my English classes. Students earn points for activities and participation, and everyone can see the live ranking. It's designed to be fun, motivating, and easy to use.
+
+## ✨ Features
+
+- 🎮 **Gamified Learning**: Students earn points for activities
+- 🏆 **Live Ranking**: Real-time leaderboard updates
+- 📱 **Mobile Friendly**: Works great on phones and tablets
+- 🔐 **Teacher Dashboard**: Protected admin area for managing students
+- 🌐 **Public Ranking**: Students can view rankings anytime
+- ⚡ **Fast & Simple**: Built with modern web technologies
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+
+- Yarn
+- A Neon database account (free tier works fine)
+
+### Setup
+
+1. **Clone and install**
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/SEU_USUARIO/english-ranking.git
+cd english-ranking
+yarn install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **Environment setup**
+```bash
+# Create .env file
+DATABASE_URL=your_neon_database_url
+ADMIN_PASSWORD=your_secure_password
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. **Initialize database**
+```bash
+yarn db:seed
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. **Start development server**
+```bash
+yarn dev
+```
 
-## Learn More
+Visit `http://localhost:3000` to see the ranking!
 
-To learn more about Next.js, take a look at the following resources:
+## 🎓 How it works
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### For Teachers
+- Access the dashboard at `/login`
+- Add students and manage their information
+- Award points for activities and participation
+- View statistics and recent activity
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### For Students
+- View the public ranking at the main URL
+- See their position and points
+- Check out the top 3 performers
+- Track their progress over time
 
-## Deploy on Vercel
+## 🛠️ Tech Stack
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Frontend**: Next.js 14, React, TypeScript
+- **Styling**: Tailwind CSS
+- **Database**: PostgreSQL (Neon)
+- **Deploy**: Vercel
+- **Auth**: Simple cookie-based authentication
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## 📁 Project Structure
+
+```
+src/
+├── app/                 # Next.js app router
+│   ├── dashboard/      # Admin pages
+│   ├── login/         # Login page
+│   └── page.tsx       # Public ranking
+├── components/        # Reusable components
+├── db/               # Database setup
+└── lib/              # Utilities
+```
+
+## 🤝 Contributing
+
+Feel free to fork this project and adapt it for your own classes! If you have improvements, pull requests are welcome.
+
+## 📝 License
+
+MIT License - feel free to use this for your own classes or projects.
+
+## 🚀 Future Plans
+
+This started as an MVP for my specific class that needed extra motivation, but I'm planning to scale it up for the entire CNA unit where I work. The vision is to create a unified system where:
+
+- **Multiple classes** can have their own rankings
+- **Teachers** can manage their students independently
+- **Students** can see both class and unit-wide rankings
+- **Administrators** can track engagement across all classes
+
+The current version is perfect for testing the concept and getting feedback from students and colleagues before building the full multi-class system.
+
+## 👨‍💻 About
+
+Built by a teacher who wanted to make learning more engaging. This project started as a simple way to motivate students and evolved into a full-featured ranking system.
+
+---
+
+⭐ **If this helped you motivate your students, consider giving it a star!**
