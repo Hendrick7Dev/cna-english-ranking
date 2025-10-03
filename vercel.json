@@ -1,11 +1,9 @@
 {
   "functions": {
-    "src/app/**/*.tsx": {
-      "maxDuration": 10
+    "api/[[...route]].ts": {
+      "maxDuration": 60,
+      "memory": 1024
+    
     }
-  },
-  "env": {
-    "DATABASE_URL": "@database_url",
-    "ADMIN_PASSWORD": "@admin_password"
   }
 }
